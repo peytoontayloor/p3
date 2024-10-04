@@ -14,8 +14,7 @@
 
 void planPoint(const std::vector<Rectangle> &obstacles)
 {
-    //not sure if right way to define our RTP planner, leave for now:
-    //base::RTP planner;
+    //most implementation from slide examples, need to double check if applied them correctly
 
     // TODO: Use your implementation of RTP to plan for a point robot.
 
@@ -76,6 +75,47 @@ void planBox(const std::vector<Rectangle> &obstacles)
 {
     // TODO: Use your implementation of RTP to plan for a rotating square robot.
     //same as point? --> minus state space?
+    ompl::base::StateSpacePtr boxrobot;
+    //since using SE2 state space, less involved? not sure exactly
+    auto se = std::make_shared<ompl::base::SE2StateSpace>;
+    //based on doc still takes real vector bounds as bounds
+    ompl::base::RealVectorBounds bounds(2);
+    bounds.setLow(-20);
+    bounds.setHigh(20);
+    se->setBounds(bounds);
+
+    boxrobot = se;
+
+    //again, not sure if calling on RTP correctly:
+    ompl::geometric::RTP rtp(boxrobot);
+    rtp.setStateValidityChecker(std::bind(isValidStateSquare, std::placeholders::_1, obstacles));
+    
+    //also iffy on if declaring start and goal states right?
+    ompl::base::ScopedState<> start(boxrobot);
+    start->setX(0.0);
+    start->setY(0.0);
+
+    ompl::base::ScopedState<> goal(boxrobot);
+    goal->setX(6.0);
+    goal->setY(3.0);
+
+    rtp.setStartAndGoalStates(start, goal);
+
+    ompl::base::PlannerStatus solved = rtp.solve(1.0);
+    if (solved)
+     {
+        //print path to screen (from slides like most of this section)
+        std::cout << "Found Solution: " << std::endl;
+        ompl::geometric::PathGeometric &path = rtp.getSolutionPath();
+        //not sure why example interpolates, commenting out for now
+        //path.interpolate(50);
+        path.printAsMatrix(std::cout);
+    }
+    else
+    {
+        std::cout << "No Solution Found" << std::endl;
+    }
+
 }
 
 void makeEnvironment1(std::vector<Rectangle> &obstacles)
