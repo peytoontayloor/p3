@@ -14,52 +14,74 @@
 
 void planPoint(const std::vector<Rectangle> &obstacles)
 {
-    base::RTP planner;
+    //not sure if right way to define our RTP planner, leave for now:
+    //base::RTP planner;
+
     // TODO: Use your implementation of RTP to plan for a point robot.
 
-    //got all of this from the demo on OMPL (rigid body planning in 2D...)
-    //set the planner:
-    
-    //need to set up state information for the planner (this is all a messy skeleton, not sure on syntax)
+    //need to set up state space:
+    ompl::base::StateSpacePtr pointrobot;
+    //in slides, says point robot is this space, but doing R2 instead of just the state space, not
+    //sure if correct
+    auto rv = std::make_shared<ompl::base::RealVectorStateSpace>(2);
+    ompl::base::RealVectorBounds bounds(2);
+    bounds.setLow(-20);
+    bounds.setHigh(20);
+    rv->setBounds(bounds);
 
-    base::SpaceInformation si;
-    si.setStateValidityChecker(isValidStatePoint);
-    //instructions imply we need to manually construct the state space? but thinking it is just SE2
-     base::ScopedState<base::SE2StateSpace> start(setup.getSpaceInformation());
-     start->setX(0.0);
-     start->setY(0.0);
+    pointrobot = rv;
 
-     //goal:
-     // define goal state
-     base::ScopedState<base::SE2StateSpace> goal(start);
-     goal->setX(6.0);
-     goal->setY(3.0);
+    //from slides, not sure about "simple set up" --> changed to rtp but still iffy
+    //not sure if calling planner from RTP.h right?
+    ompl::geometric::RTP rtp(pointrobot);
 
-     planner.setStartAndGoalStates(start, goal);
+    //need to set state validator:
+    rtp.setStateValidityChecker(std::bind(isValidStatePoint, std::placeholders::_1, obstacles));
 
-     //how to set up obstacles? --> not sure, couldnt find on ompl
+    //need to set goal and start states: 
+    ompl::base::ScopedState<> start(pointrobot);
+    //not sure if need to set specific x and y values? 
+    //start[0] = 0;
 
-     if (planner.solve())
-     {
-        //this should theoretically work? --> demo said it would? 
-        planner.getSolutionPath().print(std::cout);
-     }
+    //above was from slides, following demo doing:
+    start->setX(0.0);
+    start->setY(0.0);
+
+    ompl::base:ScopedState<> goal(pointrobot);
+    goal->setX(6.0);
+    goal->setY(3.0);
+
+    rtp.setStartAndGoalStates(start, goal);
+
+    //call the planner:
+    ompl::base::PlannerStatus solved = rtp.solve(1.0);
+    //1.0 is ptc, should adjust and see what happens
+    if (solved)
+    {
+        //print path to screen (from slides like most of this section)
+        std::cout << "Found Solution: " << std::endl;
+        ompl::geometric::PathGeometric &path = rtp.getSolutionPath();
+        //not sure why example interpolates, commenting out for now
+        //path.interpolate(50);
+        path.printAsMatrix(std::cout);
+    }
+    else
+    {
+        std::cout << "No Solution Found" << std::endl;
+    }
 
 }
 
 void planBox(const std::vector<Rectangle> &obstacles)
 {
     // TODO: Use your implementation of RTP to plan for a rotating square robot.
-    //same as point?
-    base::ScopedState<base::SE2StateSpace> start(setup.getSpaceInformation());
-     start->setX(0.0);
-     start->setY(0.0);
+    //same as point? --> minus state space?
 }
 
 void makeEnvironment1(std::vector<Rectangle> &obstacles)
 {
     // TODO: Fill in the vector of rectangles with your first environment.
-    //obstacle 1: 
+    //obstacles:
     Rectangle r1, r2, r3;
 
     r1.x = 1;
@@ -86,6 +108,33 @@ void makeEnvironment1(std::vector<Rectangle> &obstacles)
 void makeEnvironment2(std::vector<Rectangle> &obstacles)
 {
     // TODO: Fill in the vector of rectangles with your second environment.
+    //this is the one where a larger rectangle might not fit in narrow paths but point robot will
+    Rectangle r1, r2, r3, r4;
+
+    r1.x = 2;
+    r1.y = 0;
+    r1.width = 2.5;
+    r1.height = 1;
+
+    r2.x = 4.5;
+    r2.y = 1.5;
+    r2.width = 1;
+    r2.height = 5;
+
+    r3.x = 3;
+    r3.y = 2;
+    r3.width = 2;
+    r3.height = 2;
+
+    r4.x = 1;
+    r3.y = 3;
+    r3.width = 1;
+    r3.height = 3;
+
+    obstacles.push_back(r1);
+    obstacles.push_back(r2);
+    obstacles.push_back(r3);
+    obstacles.push_back(r4);
 }
 
 int main(int /* argc */, char ** /* argv */)
