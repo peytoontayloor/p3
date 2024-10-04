@@ -26,9 +26,26 @@ void makeEnvironment1(std::vector<Rectangle> &obstacles)
 {
     // TODO: Fill in the vector of rectangles with your first environment.
     //obstacle 1: 
-    Rectangle r1;
-    
-    //obstacles.push_back()
+    Rectangle r1, r2, r3;
+
+    r1.x = 1;
+    r1.y = 1;
+    r1.width = 2;
+    r1.height = 4;
+
+    r2.x = 4;
+    r2.y = 4;
+    r2.width = 2;
+    r2.height = 1;
+
+    r3.x = 4;
+    r3.y = 1;
+    r3.width = 2;
+    r3.height = 1;
+
+    obstacles.push_back(r1);
+    obstacles.push_back(r2);
+    obstacles.push_back(r3);
 
 }
 
