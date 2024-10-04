@@ -14,12 +14,46 @@
 
 void planPoint(const std::vector<Rectangle> &obstacles)
 {
+    base::RTP planner;
     // TODO: Use your implementation of RTP to plan for a point robot.
+
+    //got all of this from the demo on OMPL (rigid body planning in 2D...)
+    //set the planner:
+    
+    //need to set up state information for the planner (this is all a messy skeleton, not sure on syntax)
+
+    base::SpaceInformation si;
+    si.setStateValidityChecker(isValidStatePoint);
+    //instructions imply we need to manually construct the state space? but thinking it is just SE2
+     base::ScopedState<base::SE2StateSpace> start(setup.getSpaceInformation());
+     start->setX(0.0);
+     start->setY(0.0);
+
+     //goal:
+     // define goal state
+     base::ScopedState<base::SE2StateSpace> goal(start);
+     goal->setX(6.0);
+     goal->setY(3.0);
+
+     planner.setStartAndGoalStates(start, goal);
+
+     //how to set up obstacles? --> not sure, couldnt find on ompl
+
+     if (planner.solve())
+     {
+        //this should theoretically work? --> demo said it would? 
+        planner.getSolutionPath().print(std::cout);
+     }
+
 }
 
 void planBox(const std::vector<Rectangle> &obstacles)
 {
     // TODO: Use your implementation of RTP to plan for a rotating square robot.
+    //same as point?
+    base::ScopedState<base::SE2StateSpace> start(setup.getSpaceInformation());
+     start->setX(0.0);
+     start->setY(0.0);
 }
 
 void makeEnvironment1(std::vector<Rectangle> &obstacles)
