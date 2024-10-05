@@ -40,16 +40,13 @@ void planPoint(const std::vector<Rectangle> &obstacles)
     //need to set goal and start states: 
     ompl::base::ScopedState<> start(pointrobot);
     //not sure if need to set specific x and y values? 
-    //start[0] = 0;
+    //assuming pos 0 is x and pos 1 is y
+    start[0] = 0.0;
+    start[1] = 0.0;
 
-    //above was from slides, following demo doing:
-    start->setX(0.0);
-    start->setY(0.0);
-
-    ompl::base:ScopedState<> goal(pointrobot);
-    goal->setX(6.0);
-    goal->setY(3.0);
-
+    ompl::base::ScopedState<> goal(pointrobot);
+    goal[0] = 6.0;
+    goal[1] = 3.0;
     rtp.setStartAndGoalStates(start, goal);
 
     //call the planner:
@@ -92,12 +89,13 @@ void planBox(const std::vector<Rectangle> &obstacles)
     
     //also iffy on if declaring start and goal states right?
     ompl::base::ScopedState<> start(boxrobot);
-    start->setX(0.0);
-    start->setY(0.0);
+    //assuming pos 0 is x and pos 1 is y
+    start[0] = 0.0;
+    start[1] = 0.0;
 
     ompl::base::ScopedState<> goal(boxrobot);
-    goal->setX(6.0);
-    goal->setY(3.0);
+    goal[0] = 6.0;
+    goal[1] = 3.0;
 
     rtp.setStartAndGoalStates(start, goal);
 
