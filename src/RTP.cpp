@@ -112,7 +112,7 @@ PlannerStatus RTP::solve(const PlannerTerminationCondition &ptc)
                 path->reverse();
 
                 // TODO: double check "addSolutionPath" is necessary
-                pdef_ ->addSolutionPath(path)
+                pdef_ ->addSolutionPath(path);
 
                 return PlannerStatus::EXACT_SOLUTION;
             }
@@ -144,7 +144,8 @@ PlannerStatus RTP::solve(const PlannerTerminationCondition &ptc)
 
     path->reverse();
     // TODO: double check "addSolutionPath" is necessary
-    pdef_ ->addSolutionPath(path)
+    //TODO: need to mark as approx vs exact?
+    pdef_ ->addSolutionPath(path);
     return PlannerStatus::APPROXIMATE_SOLUTION;
 }
 
