@@ -130,7 +130,8 @@ void planBox(const std::vector<Rectangle> &obstacles)
 
     ompl::base::SpaceInformationPtr si = std::make_shared<ompl::base::SpaceInformation>(se2);
 
-    si->setStateValidityChecker(std::bind(isValidStateSquare, std::placeholders::_1, obstacles));
+    //choose length of robot
+    si->setStateValidityChecker(std::bind(isValidStateSquare, std::placeholders::_1, 3, obstacles));
     si->setup();
 
     ompl::base::ProblemDefinitionPtr pdef(new ompl::base::ProblemDefinition(si));
