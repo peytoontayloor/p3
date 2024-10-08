@@ -128,10 +128,12 @@ void planBox(const std::vector<Rectangle> &obstacles)
     bounds.setHigh(20);
     se2->as<ompl::base::SE2StateSpace>()->setBounds(bounds);
 
-    ompl::base::SpaceInformationptr si = std::make_shared<ompl::base::SpaceInformation>(se2);
+    ompl::base::SpaceInformationPtr si = std::make_shared<ompl::base::SpaceInformation>(se2);
 
-    si->setStateValidityChecker(std::bind(isValidStateSquare, std::placeholders::_1, onstacles));
+    si->setStateValidityChecker(std::bind(isValidStateSquare, std::placeholders::_1, obstacles));
     si->setup();
+
+    ompl::base::ProblemDefinitionPtr pdef(new ompl::base::ProblemDefinition(si));
 
     ompl::base::ScopedState<> start(se2);
     start[0] = 0.0;
@@ -143,7 +145,7 @@ void planBox(const std::vector<Rectangle> &obstacles)
 
     pdef->setStartAndGoalStates(start, goal);
 
-    ompl::base::PlannerPtr planner(newompl::geometric::RTP(si));
+    ompl::base::PlannerPtr planner(new ompl::geometric::RTP(si));
     planner->setProblemDefinition(pdef);
     planner->setup();
 
@@ -153,7 +155,7 @@ void planBox(const std::vector<Rectangle> &obstacles)
     {
         std::cout << "Found SOlution: " << std::endl;
         ompl::base::PathPtr path = pdef->getSolutionPath();
-        path->as<ompl::geometric::PathGeometric>()->printAsMatrix(std::cout):
+        path->as<ompl::geometric::PathGeometric>()->printAsMatrix(std::cout);
     }
     else
     {
