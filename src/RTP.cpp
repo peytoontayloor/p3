@@ -12,6 +12,7 @@
 using namespace ompl::base;
 using namespace ompl::geometric;
 
+//TO DO: need to come up with value other than -1 to signify roots parent bc not of type size_t (not sure what to do here yet)
 
 /* Calculate exact solution path following RTP algorithm.
     If timeout, calculates approximate path. */
@@ -123,11 +124,11 @@ PlannerStatus RTP::solve(const PlannerTerminationCondition &ptc)
     //double distance = si_->distance(starts[0].get(), goal_r.get());
     //need goal to be of type State not sampleable type
     //either pdef->getGoal() or goal_r?
-    double distance = si_->distance(starts[0].get(), pdef->getGoal());
+    double distance = si_->distance(starts[0].get(), pdef_->getGoal());
     size_t index = 0;
     for(size_t i = 1; i < starts.size(); i++)
     {
-        double temp = si_->distance(starts[i].get(),  pdef->getGoal());
+        double temp = si_->distance(starts[i].get(),  pdef_->getGoal());
         if(temp < distance)
         {
             distance = temp;
