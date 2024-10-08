@@ -120,11 +120,14 @@ PlannerStatus RTP::solve(const PlannerTerminationCondition &ptc)
     }
 
     // Since timeout, find closest state to goal in tree to approx sol path
-    double distance = si_->distance(starts[0].get(), goal_r.get());
+    //double distance = si_->distance(starts[0].get(), goal_r.get());
+    //need goal to be of type State not sampleable type
+    //either pdef->getGoal() or goal_r?
+    double distance = si_->distance(starts[0].get(), pdef->getGoal());
     size_t index = 0;
     for(size_t i = 1; i < starts.size(); i++)
     {
-        double temp = si_->distance(starts[i].get(), goal_r.get());
+        double temp = si_->distance(starts[i].get(),  pdef->getGoal());
         if(temp < distance)
         {
             distance = temp;
@@ -134,12 +137,12 @@ PlannerStatus RTP::solve(const PlannerTerminationCondition &ptc)
 
     // Construct approx sol path from start to starts[closest to goal]
     auto path = std::make_shared<PathGeometric>(si_);
-    path->append(starts[index]);
+    path->append(starts[index].get());
     size_t i = parents[index];
     while(i != -1)
     {
         path->append(starts[i].get());
-        i = parents[i]
+        i = parents[i];
     }
 
     path->reverse();
@@ -155,8 +158,11 @@ void RTP::clear() {
 
     //according to rrt, this is called if the input data to the planner has changed and we don't want to continue planning
     Planner::clear();
-    sampler.reset();
-    freeMemory();
+
+    //TO DO: one of the errors is bc sampler declared in solve() not the RTP class, not sure if needed to be declared in class, for now commenting it out
+    //sampler.reset();
+    //TO DO: one of the errors same as above, not sure if freememory() necessary
+    //freeMemory();
 
     // Clear global vectors storing tree structure
     starts.clear();
@@ -183,12 +189,12 @@ void RTP::getPlannerData(base::PlannerData &data) const
         // Add start vertices
         if(parents[i] == -1)
         {
-            data.addStartVertex(base::PlannerDataVertex(starts[i]));
+            data.addStartVertex(base::PlannerDataVertex(starts[i].get()));
         }
         else
         {
             // Add an edge from parent of i to i
-            data.addEdge(base::PlannerDataVertex(starts[parents[i]]), base::PlannerDataVertex(starts[i]));
+            data.addEdge(base::PlannerDataVertex(starts[parents[i]].get()), base::PlannerDataVertex(starts[i].get()));
         }
     }
 
