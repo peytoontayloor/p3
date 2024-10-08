@@ -130,7 +130,7 @@ void planBox(const std::vector<Rectangle> &obstacles)
 
     ompl::base::SpaceInformationPtr si = std::make_shared<ompl::base::SpaceInformation>(se2);
 
-    //choose length of robot
+    //choose length of robot!
     si->setStateValidityChecker(std::bind(isValidStateSquare, std::placeholders::_1, 3, obstacles));
     si->setup();
 
