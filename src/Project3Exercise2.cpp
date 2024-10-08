@@ -120,6 +120,50 @@ void planBox(const std::vector<Rectangle> &obstacles)
     //     std::cout << "No Solution Found" << std::endl;
     // }
 
+    //new implementation following point robot implementation:
+    ompl::base::StateSpacePtr se2(new ompl::base::SE2StateSpace);
+
+    ompl::base::RealVectorBounds bounds(2);
+    bounds.setLow(-20);
+    bounds.setHigh(20);
+    se2->as<ompl::base::SE2StateSpace>()->setBounds(bounds);
+
+    ompl::base::SpaceInformationptr si = std::make_shared<ompl::base::SpaceInformation>(se2);
+
+    si->setStateValidityChecker(std::bind(isValidStateSquare, std::placeholders::_1, onstacles));
+    si->setup();
+
+    ompl::base::ScopedState<> start(se2);
+    start[0] = 0.0;
+    start[1] = 1.0;
+
+    ompl::base::ScopedState<> goal(se2);
+    goal[0] = 6.0;
+    goal[1] = 3.0;
+
+    pdef->setStartAndGoalStates(start, goal);
+
+    ompl::base::PlannerPtr planner(newompl::geometric::RTP(si));
+    planner->setProblemDefinition(pdef);
+    planner->setup();
+
+    ompl::base::PlannerStatus solved = planner->solve(1.0);
+
+    if (solved)
+    {
+        std::cout << "Found SOlution: " << std::endl;
+        ompl::base::PathPtr path = pdef->getSolutionPath();
+        path->as<ompl::geometric::PathGeometric>()->printAsMatrix(std::cout):
+    }
+    else
+    {
+        std::cout << "No Solution Found" << std::endl;
+    }
+
+    planner->clear();
+
+
+
 }
 
 void makeEnvironment1(std::vector<Rectangle> &obstacles)
