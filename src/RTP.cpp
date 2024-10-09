@@ -33,7 +33,7 @@ PlannerStatus RTP::solve(const PlannerTerminationCondition &ptc)
     // State sampler for the state space
     StateSamplerPtr sampler = si_->allocStateSampler();
 
-    // populate with starts
+    // Populate with starts
     while (const State *s = pis_.nextStart())
     {
         if(si_->isValid(s))
@@ -46,27 +46,26 @@ PlannerStatus RTP::solve(const PlannerTerminationCondition &ptc)
         }
     }
 
-
     if (starts.size() == 0)
     {
         // No valid initial states
         return PlannerStatus::INVALID_START;
     }
 
-    //ScopedState<> sample(si_), goal(si_);
+   
     ScopedState<> qb(si_);
+    size_t approxidx;
+    double approxdif = std::numeric_limits<double>::infinity();
 
     // Runs until planner termination condition is met
     while (!ptc)
     {
-        //uses rng to select random state
+        // Select random state
         size_t state_id = rng_.uniformInt(0, starts.size() - 1);
 
         ScopedState<> &qa = starts[state_id];
 
-        //from rrt documentation, sample a random state, with small chance of qb being the goal
-        /* sample random state (with goal biasing) */
-        //if random number less than goal bias and goal state can be sampled, qb is goal state, else qb is sample
+        // Sample a random state, with small chance of qb being the goal
         double goalBias_ = 0.05;
         if (rng_.uniform01() < goalBias_ && goal_r->canSample())
             goal_r->sampleGoal(qb.get());
@@ -82,80 +81,61 @@ PlannerStatus RTP::solve(const PlannerTerminationCondition &ptc)
             // Assign index of qa in starts to be parent of qb
             parents.push_back(state_id);
             
-            // TODO: "can i plus in qb.get()?"
-            //if goal state was just adfed to the tree, find path and return:
-            //not sure parameters of isSatisfied, got from RRT but am not sure? can i plus in qb.get()
-            // Check if qb satisfies goal
-            if(goal_r->isSatisfied(qb.get()))
+            // Instantiate variable to store path
+            auto path = std::make_shared<PathGeometric>(si_);
+
+            // Add qb (the goal) to path
+            path->append(qb.get());
+
+            // Index of qb's parent
+            size_t i = parents.back();
+
+            // Construct path until root is found
+            while(i != NO_PARENT)
             {
-                // Instantiate variable to store path
-                auto path = std::make_shared<PathGeometric>(si_);
+                path->append(starts[i].get());
 
-                // Add qb (the goal) to path
-                path->append(qb.get());
+                // Update index to parent corresponding to next
+                i = parents[i];
+            }
+            // Reverse path from goal-to-start to start-to-goal
+            path->reverse();
 
-                //set index i to the index of qb in starts
-                //hoping that .back() correctly accesses last element in parents which should correspond to last element in starts, qb
-                
-                // Index of qb's parent
-                size_t i = parents.back();
-
-                // Construct path until root (parent idx = -1) is found
-                while(i != NO_PARENT)
-                {
-                    // Add state corresponding to start[i] to path
-                    path->append(starts[i].get());
-
-                    // Update index to parent corresponding to next
-                    i = parents[i];
-                }
-
-                // Reverse path from goal-to-start to start-to-goal
-                path->reverse();
-
-                // TODO: double check "addSolutionPath" is necessary
-                pdef_ ->addSolutionPath(path);
-
+            // Check if qb satisfies goal
+            double dist = 0.0;
+            bool sat = goal_r->isSatisfied(qb.get(), &dist);
+            
+            if (sat) 
+            {
+                approxdif = dist;
+                pdef_ ->addSolutionPath(path, false, 0.0, "RTP");
                 return PlannerStatus::EXACT_SOLUTION;
             }
+
+            if (dist < approxdif)
+            {
+                approxdif = dist;       // distance between qb and goal
+                approxidx = state_id;   // qb's start index
+            }
+           
         }
     }
 
-    // Since timeout, find closest state to goal in tree to approx sol path
-    //double distance = si_->distance(starts[0].get(), goal_r.get());
-    //need goal to be of type State not sampleable type
-    //either pdef->getGoal() or goal_r?
-    double distance = si_->distance(starts[0].get(), pdef_->getGoal());
-    size_t index = 0;
-    for(size_t i = 1; i < starts.size(); i++)
-    {
-        double temp = si_->distance(starts[i].get(),  pdef_->getGoal());
-        if(temp < distance)
-        {
-            distance = temp;
-            index = i;
-        }
-    }
-
-    // Construct approx sol path from start to starts[closest to goal]
+    // Since timeout, construct approx solution from start to starts[approxidx]
     auto path = std::make_shared<PathGeometric>(si_);
-    path->append(starts[index].get());
-    size_t i = parents[index];
+    path->append(starts[approxidx].get());
+    size_t i = parents[approxidx];
     while(i != NO_PARENT)
     {
         path->append(starts[i].get());
         i = parents[i];
     }
-
     path->reverse();
-    // TODO: double check "addSolutionPath" is necessary
-    //TODO: need to mark as approx vs exact?
-    pdef_ ->addSolutionPath(path);
+    pdef_ ->addSolutionPath(path, true, approxdif, "RTP");
     return PlannerStatus::APPROXIMATE_SOLUTION;
 }
 
-
-// TODO: not sure if can leave as default or if need to add more layers (if so, adjust the header file too)
+// TODO: need to call freeMemory??
 void RTP::clear() {
 
     //according to rrt, this is called if the input data to the planner has changed and we don't want to continue planning
@@ -171,11 +151,9 @@ void RTP::clear() {
     parents.clear();
 }
 
-// TODO: determine return, currently doing void
-//pdf says it returns a planner data object, but rrt documentation doesnt return anything? 
+
 //store all the vertexes statically
 //include all of the states and create edges and vertices with them
-//if can find solution from exercise 2 should be okay
 //shared pointer should be automatically released 
 void RTP::getPlannerData(base::PlannerData &data) const
 {
@@ -183,13 +161,10 @@ void RTP::getPlannerData(base::PlannerData &data) const
 
     //now add vertices and edges! (from starts and parents vectors)
     //not just adding the path, adding all states and their edges
-
-    //if returning, return data? 
-
     for(size_t i = 0; i < starts.size(); i++)
     {
         // Add start vertices
-        if(parents[i] == -1)
+        if(parents[i] == NO_PARENT)
         {
             data.addStartVertex(base::PlannerDataVertex(starts[i].get()));
         }
@@ -199,7 +174,4 @@ void RTP::getPlannerData(base::PlannerData &data) const
             data.addEdge(base::PlannerDataVertex(starts[parents[i]].get()), base::PlannerDataVertex(starts[i].get()));
         }
     }
-
-    //not sure if should be returning still?--> pdf says to so should for now
-    // return data
 }
