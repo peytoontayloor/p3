@@ -1,6 +1,10 @@
 #from ompl visualize documentation w/ modifications
 
-#works for environments 1 and 2 as of now (only with point robot)
+#Right now, works for point robot. Technically works for square, but not sure if 
+#orientation is necessary to plot. Run by copy and pasting the path output into path.txt and 
+#uncommenting the environment wanted.
+
+#TODO: show the square robot correctly (add as rectangle object?)
 
 import numpy
 import matplotlib.pyplot as plt
