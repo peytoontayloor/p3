@@ -1,16 +1,12 @@
 ///////////////////////////////////////
 // COMP/ELEC/MECH 450/550
 // Project 3
-// Authors: FILL ME OUT!!
+// Authors: Swaha Roy and Peyton Elebash
 //////////////////////////////////////
 
 #ifndef RANDOM_TREE_H
 #define RANDOM_TREE_H
 
-// TODO: test which set of headers works
-// #include "ompl/base/PlannerStatus.h"
-// #include "ompl/base/PlannerTerminationCondition.h"
-// #include <ompl/base/Planner.h>
 #include "ompl/geometric/planners/PlannerIncludes.h"
 #include "ompl/base/ScopedState.h"
 

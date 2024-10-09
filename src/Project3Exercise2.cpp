@@ -1,7 +1,7 @@
 ///////////////////////////////////////
 // COMP/ELEC/MECH 450/550
 // Project 3
-// Authors: FILL ME OUT!!
+// Authors: Swaha Roy and Peyton Elebash
 //////////////////////////////////////
 
 #include <iostream>
@@ -25,7 +25,6 @@ void planPoint(const std::vector<Rectangle> &obstacles)
     r2->as<ompl::base::RealVectorStateSpace>()->setBounds(bounds);
 
     // Construct an instance of space information from this state space
-    //TODO: understand why this didn't work -> ompl::base::SpaceInformationPtr si(r2);
     ompl::base::SpaceInformationPtr si = std::make_shared<ompl::base::SpaceInformation>(r2);
 
     // Set the StateValidityChecker for a point robot
@@ -35,7 +34,6 @@ void planPoint(const std::vector<Rectangle> &obstacles)
     // Create a problem instance
     ompl::base::ProblemDefinitionPtr pdef(new ompl::base::ProblemDefinition(si));
 
-    // TODO: maybe set random star t and goal states?
     // Specify the start and goal states
     ompl::base::ScopedState<> start(r2);
     start[0] = 0.0;
@@ -61,8 +59,6 @@ void planPoint(const std::vector<Rectangle> &obstacles)
         // Print path to screen
         std::cout << "Found Solution: " << std::endl;
         ompl::base::PathPtr path = pdef->getSolutionPath();
-        //not sure why example interpolates, commenting out for now
-        //path.interpolate(50);
         path->as<ompl::geometric::PathGeometric>()->printAsMatrix(std::cout);
     }
     else
@@ -74,53 +70,9 @@ void planPoint(const std::vector<Rectangle> &obstacles)
 
 }
 
+/* Use RTP to plan for a rectangular robot */
 void planBox(const std::vector<Rectangle> &obstacles)
 {
-    // // TODO: Use your implementation of RTP to plan for a rotating square robot.
-    // //same as point? --> minus state space?
-    // ompl::base::StateSpacePtr boxrobot;
-    // //since using SE2 state space, less involved? not sure exactly
-    // auto se = std::make_shared<ompl::base::SE2StateSpace>;
-    // //based on doc still takes real vector bounds as bounds
-    // ompl::base::RealVectorBounds bounds(2);
-    // bounds.setLow(-20);
-    // bounds.setHigh(20);
-    // se->setBounds(bounds);
-
-    // boxrobot = se;
-
-    // //again, not sure if calling on RTP correctly:
-    // ompl::geometric::RTP rtp(boxrobot);
-    // rtp.setStateValidityChecker(std::bind(isValidStateSquare, std::placeholders::_1, obstacles));
-    
-    // //also iffy on if declaring start and goal states right?
-    // ompl::base::ScopedState<> start(boxrobot);
-    // //assuming pos 0 is x and pos 1 is y
-    // start[0] = 0.0;
-    // start[1] = 0.0;
-
-    // ompl::base::ScopedState<> goal(boxrobot);
-    // goal[0] = 6.0;
-    // goal[1] = 3.0;
-
-    // rtp.setStartAndGoalStates(start, goal);
-
-    // ompl::base::PlannerStatus solved = rtp.solve(1.0);
-    // if (solved)
-    //  {
-    //     //print path to screen (from slides like most of this section)
-    //     std::cout << "Found Solution: " << std::endl;
-    //     ompl::geometric::PathGeometric &path = rtp.getSolutionPath();
-    //     //not sure why example interpolates, commenting out for now
-    //     //path.interpolate(50);
-    //     path.printAsMatrix(std::cout);
-    // }
-    // else
-    // {
-    //     std::cout << "No Solution Found" << std::endl;
-    // }
-
-    //new implementation following point robot implementation:
     ompl::base::StateSpacePtr se2(new ompl::base::SE2StateSpace);
 
     ompl::base::RealVectorBounds bounds(2);
@@ -130,7 +82,7 @@ void planBox(const std::vector<Rectangle> &obstacles)
 
     ompl::base::SpaceInformationPtr si = std::make_shared<ompl::base::SpaceInformation>(se2);
 
-    //choose length of robot!
+    // Choose length of robot
     si->setStateValidityChecker(std::bind(isValidStateSquare, std::placeholders::_1, 3, obstacles));
     si->setup();
 
@@ -154,7 +106,7 @@ void planBox(const std::vector<Rectangle> &obstacles)
 
     if (solved)
     {
-        std::cout << "Found SOlution: " << std::endl;
+        std::cout << "Found Solution: " << std::endl;
         ompl::base::PathPtr path = pdef->getSolutionPath();
         path->as<ompl::geometric::PathGeometric>()->printAsMatrix(std::cout);
     }
@@ -171,8 +123,6 @@ void planBox(const std::vector<Rectangle> &obstacles)
 
 void makeEnvironment1(std::vector<Rectangle> &obstacles)
 {
-    // TODO: Fill in the vector of rectangles with your first environment.
-    //obstacles:
     Rectangle r1, r2, r3;
 
     r1.x = 1;
@@ -196,10 +146,11 @@ void makeEnvironment1(std::vector<Rectangle> &obstacles)
 
 }
 
+/* Environment with axis-aligned rectangular obstacles with narrow gaps s.t. a larger rectangual
+    robot may be obstructed.
+*/
 void makeEnvironment2(std::vector<Rectangle> &obstacles)
 {
-    // TODO: Fill in the vector of rectangles with your second environment.
-    //this is the one where a larger rectangle might not fit in narrow paths but point robot will
     Rectangle r1, r2, r3, r4;
 
     r1.x = 2;
