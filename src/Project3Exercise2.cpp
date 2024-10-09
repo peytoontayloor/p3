@@ -83,18 +83,21 @@ void planBox(const std::vector<Rectangle> &obstacles)
     ompl::base::SpaceInformationPtr si = std::make_shared<ompl::base::SpaceInformation>(se2);
 
     // Choose length of robot
-    si->setStateValidityChecker(std::bind(isValidStateSquare, std::placeholders::_1, 3, obstacles));
+    si->setStateValidityChecker(std::bind(isValidStateSquare, std::placeholders::_1, 1, obstacles));
     si->setup();
 
     ompl::base::ProblemDefinitionPtr pdef(new ompl::base::ProblemDefinition(si));
 
+    //also need orientation? -> no, assumes orientation 0 if nothing is put
     ompl::base::ScopedState<> start(se2);
     start[0] = 0.0;
     start[1] = 1.0;
+    //start[2] = 0.0;
 
     ompl::base::ScopedState<> goal(se2);
     goal[0] = 6.0;
     goal[1] = 3.0;
+    //goal[2] = 0.0;
 
     pdef->setStartAndGoalStates(start, goal);
 
