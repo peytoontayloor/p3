@@ -20,8 +20,8 @@ void planPoint(const std::vector<Rectangle> &obstacles)
 
     // Set lower an upper bounds
     ompl::base::RealVectorBounds bounds(2);
-    bounds.setLow(-20);
-    bounds.setHigh(20);
+    bounds.setLow(-12);
+    bounds.setHigh(12);
     r2->as<ompl::base::RealVectorStateSpace>()->setBounds(bounds);
 
     // Construct an instance of space information from this state space
