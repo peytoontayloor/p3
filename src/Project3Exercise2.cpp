@@ -195,6 +195,7 @@ int main(int /* argc */, char ** /* argv */)
 
     do
     {
+        // TODO: Name environments
         std::cout << "In Environment: " << std::endl;
         std::cout << " (1) TODO" << std::endl;
         std::cout << " (2) TODO" << std::endl;
