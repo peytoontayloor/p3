@@ -9,10 +9,11 @@
 #include <ompl/base/goals/GoalSampleableRegion.h>
 #include <ompl/geometric/PathGeometric.h>
 
+#include <limits>
+#define NO_PARENT std::numeric_limits<size_t>::max()
+
 using namespace ompl::base;
 using namespace ompl::geometric;
-
-//TO DO: need to come up with value other than -1 to signify roots parent bc not of type size_t (not sure what to do here yet)
 
 /* Calculate exact solution path following RTP algorithm.
     If timeout, calculates approximate path. */
@@ -41,7 +42,7 @@ PlannerStatus RTP::solve(const PlannerTerminationCondition &ptc)
             starts.push_back(ScopedState<>(si_->getStateSpace(), s));
 
             // No parent for start state, indicated by -1
-            parents.push_back(-1);
+            parents.push_back(NO_PARENT);
         }
     }
 
@@ -100,7 +101,7 @@ PlannerStatus RTP::solve(const PlannerTerminationCondition &ptc)
                 size_t i = parents.back();
 
                 // Construct path until root (parent idx = -1) is found
-                while(i != -1)
+                while(i != NO_PARENT)
                 {
                     // Add state corresponding to start[i] to path
                     path->append(starts[i].get());
@@ -140,7 +141,7 @@ PlannerStatus RTP::solve(const PlannerTerminationCondition &ptc)
     auto path = std::make_shared<PathGeometric>(si_);
     path->append(starts[index].get());
     size_t i = parents[index];
-    while(i != -1)
+    while(i != NO_PARENT)
     {
         path->append(starts[i].get());
         i = parents[i];
