@@ -5,6 +5,7 @@
 //////////////////////////////////////
 
 #include <iostream>
+#include <fstream>
 
 // The collision checker routines
 #include "CollisionChecking.h"
@@ -20,8 +21,8 @@ void planPoint(const std::vector<Rectangle> &obstacles)
 
     // Set lower an upper bounds
     ompl::base::RealVectorBounds bounds(2);
-    bounds.setLow(-12);
-    bounds.setHigh(12);
+    bounds.setLow(0);
+    bounds.setHigh(9);
     r2->as<ompl::base::RealVectorStateSpace>()->setBounds(bounds);
 
     // Construct an instance of space information from this state space
@@ -51,19 +52,24 @@ void planPoint(const std::vector<Rectangle> &obstacles)
     planner->setup();
     
     // Call planner
-    // 1.0 is ptc, should adjust and see what happens
-    ompl::base::PlannerStatus solved = planner->solve(1.0);
+    ompl::base::PlannerStatus solved = planner->solve(5.0);
 
     if (solved)
     {
-        // Print path to screen
+        // Print path in terminal
         std::cout << "Found Solution: " << std::endl;
         ompl::base::PathPtr path = pdef->getSolutionPath();
         path->as<ompl::geometric::PathGeometric>()->printAsMatrix(std::cout);
+
+        // Capture output in path.txt file
+        std::ofstream pathOutput("path.txt");
+        path->as<ompl::geometric::PathGeometric>()->printAsMatrix(pathOutput);
+        pathOutput.close();
     }
     else
     {
         std::cout << "No Solution Found" << std::endl;
+        
     }
 
     planner->clear();
@@ -76,8 +82,8 @@ void planBox(const std::vector<Rectangle> &obstacles)
     ompl::base::StateSpacePtr se2(new ompl::base::SE2StateSpace);
 
     ompl::base::RealVectorBounds bounds(2);
-    bounds.setLow(-20);
-    bounds.setHigh(20);
+    bounds.setLow(0);
+    bounds.setHigh(9);
     se2->as<ompl::base::SE2StateSpace>()->setBounds(bounds);
 
     ompl::base::SpaceInformationPtr si = std::make_shared<ompl::base::SpaceInformation>(se2);
@@ -92,12 +98,10 @@ void planBox(const std::vector<Rectangle> &obstacles)
     ompl::base::ScopedState<> start(se2);
     start[0] = 0.0;
     start[1] = 1.0;
-    //start[2] = 0.0;
 
     ompl::base::ScopedState<> goal(se2);
     goal[0] = 6.0;
     goal[1] = 3.0;
-    //goal[2] = 0.0;
 
     pdef->setStartAndGoalStates(start, goal);
 
@@ -198,10 +202,9 @@ int main(int /* argc */, char ** /* argv */)
 
     do
     {
-        // TODO: Name environments
         std::cout << "In Environment: " << std::endl;
-        std::cout << " (1) TODO" << std::endl;
-        std::cout << " (2) TODO" << std::endl;
+        std::cout << " (1) Three Rectangles " << std::endl;
+        std::cout << " (2) Overlapping Rectangles " << std::endl;
 
         std::cin >> choice;
     } while (choice < 1 || choice > 2);
