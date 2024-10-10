@@ -1,7 +1,7 @@
 ///////////////////////////////////////
 // COMP/ELEC/MECH 450/550
 // Project 3
-// Authors: Swaha Roy and Peyton Elebash
+// Authors: Swaha Roy and Peyton ElebashE
 //////////////////////////////////////
 
 #include "RTP.h"
@@ -15,8 +15,7 @@
 using namespace ompl::base;
 using namespace ompl::geometric;
 
-/* Calculate exact solution path following RTP algorithm.
-    If timeout, calculates approximate path. */
+// Calculate exact solution path following RTP algorithm. If timeout, calculates approximate path.
 PlannerStatus RTP::solve(const PlannerTerminationCondition &ptc)
 {
     checkValidity();
@@ -135,32 +134,23 @@ PlannerStatus RTP::solve(const PlannerTerminationCondition &ptc)
     return PlannerStatus::APPROXIMATE_SOLUTION;
 }
 
-// TODO: need to call freeMemory??
 void RTP::clear() {
 
-    //according to rrt, this is called if the input data to the planner has changed and we don't want to continue planning
+    // Clear internal planner datastructures
     Planner::clear();
-
-    //TO DO: one of the errors is bc sampler declared in solve() not the RTP class, not sure if needed to be declared in class, for now commenting it out
-    //sampler.reset();
-    //TO DO: one of the errors same as above, not sure if freememory() necessary
-    //freeMemory();
 
     // Clear global vectors storing tree structure
     starts.clear();
     parents.clear();
 }
 
-
-//store all the vertexes statically
-//include all of the states and create edges and vertices with them
-//shared pointer should be automatically released 
+// Store all the vertexes statically, include all of the states and create edges and vertices with them
 void RTP::getPlannerData(base::PlannerData &data) const
 {
     Planner::getPlannerData(data);
 
-    //now add vertices and edges! (from starts and parents vectors)
-    //not just adding the path, adding all states and their edges
+    // Add vertices and edge from starts and parents vectors
+    // Not just adding the path, adding all states and their edges
     for(size_t i = 0; i < starts.size(); i++)
     {
         // Add start vertices

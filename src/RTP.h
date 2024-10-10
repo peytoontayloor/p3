@@ -20,11 +20,9 @@ namespace ompl
             public:
             
             // Constructor
-            // TODO: si might need to be &si
             RTP(base::SpaceInformationPtr &si) : Planner(si, "RTP") {}
 
             // Destructor
-            // TODO: may need to override and define in .cpp
             ~RTP() = default;
 
             // Returns status of attempt to plan based on terminiation condition
