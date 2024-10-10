@@ -176,9 +176,9 @@ void makeEnvironment2(std::vector<Rectangle> &obstacles)
     r3.height = 2;
 
     r4.x = 1;
-    r3.y = 3;
-    r3.width = 1;
-    r3.height = 3;
+    r4.y = 3;
+    r4.width = 1;
+    r4.height = 3;
 
     obstacles.push_back(r1);
     obstacles.push_back(r2);
