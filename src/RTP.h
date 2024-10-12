@@ -20,7 +20,7 @@ namespace ompl
             public:
             
             // Constructor
-            RTP(base::SpaceInformationPtr &si) : Planner(si, "RTP") {}
+            RTP(const base::SpaceInformationPtr &si) : Planner(si, "RTP") {}
 
             // Destructor
             ~RTP() = default;

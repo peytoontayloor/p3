@@ -9,6 +9,14 @@
 // Your random tree planner
 #include "RTP.h"
 
+//trying to include correct headers:
+#include <omplapp/apps/SE3RigidBodyPlanning.h>
+#include <omplapp/config.h>
+#include "ompl/tools/benchmark/Benchmark.h"
+#include <ompl/geometric/planners/prm/PRM.h>
+#include <ompl/geometric/planners/rrt/RRT.h>
+#include <ompl/geometric/planners/est/EST.h>
+
 using namespace ompl;
 
 void benchmarkApartment()
@@ -19,7 +27,8 @@ void benchmarkApartment()
     // Load robot and environment
     std::string robot_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/3D/Apartment_robot.dae";
     std::string env_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/3D/Apartment_env.dae";
-    geometric::SimpleSetup ss(space);
+    //not sure if needed?
+    //geometric::SimpleSetup ss(space);
     setup.setRobotMesh(robot_fname);
     setup.setEnvironmentMesh(env_fname);
 
