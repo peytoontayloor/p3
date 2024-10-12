@@ -75,6 +75,8 @@ void benchmarkApartment()
 
     // Generate file
     b.saveResultsToFile();
+
+    //TODO: need to clear the planner?
 }
 
 void benchmarkHome()
