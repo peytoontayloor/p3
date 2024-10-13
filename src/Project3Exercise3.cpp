@@ -34,16 +34,16 @@ void benchmarkApartment()
 
     // Define start state
     base::ScopedState<base::SE3StateSpace> start(setup.getSpaceInformation());
-    start->setX(-4.96);
-    start->setY(-40.62);
-    start->setZ(70.57);
+    start->setX(241.81);
+    start->setY(106.15);
+    start->setZ(36.46);
     start->rotation().setIdentity();
 
     // define goal state
     base::ScopedState<base::SE3StateSpace> goal(start);
-    goal->setX(200.49);
-    goal->setY(-40.62);
-    goal->setZ(70.57);
+    goal->setX(-31.19);
+    goal->setY(-99.85);
+    goal->setZ(36.46);
     goal->rotation().setIdentity();
   
     // set the start & goal states
