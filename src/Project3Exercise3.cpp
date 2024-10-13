@@ -94,6 +94,7 @@ void benchmarkHome()
     setup.setEnvironmentMesh(env_fname);
 
     // Define start state
+    //TO DO: start and goal states may be too simple/why it isnt not benchmarking correctly(too fast)
     base::ScopedState<base::SE3StateSpace> start(setup.getSpaceInformation());
     start->setX(-4.96);
     start->setY(-40.62);
