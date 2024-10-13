@@ -96,16 +96,16 @@ void benchmarkHome()
     // Define start state
     //TO DO: start and goal states may be too simple/why it isnt not benchmarking correctly(too fast)
     base::ScopedState<base::SE3StateSpace> start(setup.getSpaceInformation());
-    start->setX(-4.96);
-    start->setY(-40.62);
-    start->setZ(70.57);
+    start->setX(252.95);
+    start->setY(-214.95);
+    start->setZ(46.19);
     start->rotation().setIdentity();
 
     // define goal state
     base::ScopedState<base::SE3StateSpace> goal(start);
-    goal->setX(200.49);
-    goal->setY(-40.62);
-    goal->setZ(70.57);
+    goal->setX(262.95);
+    goal->setY(75.05);
+    goal->setZ(46.19);
     goal->rotation().setIdentity();
   
     // set the start & goal states
