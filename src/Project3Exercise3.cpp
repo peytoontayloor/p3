@@ -67,7 +67,7 @@ void benchmarkApartment()
 
     // Create benchmark request
     tools::Benchmark::Request req;
-    req.maxTime = 5.0;
+    req.maxTime = 30.0;
     req.maxMem = 100.0;
     req.runCount = 50;
     req.displayProgress = true;
@@ -75,8 +75,6 @@ void benchmarkApartment()
 
     // Generate file
     b.saveResultsToFile();
-
-    //TODO: need to clear the planner?
 }
 
 void benchmarkHome()
@@ -129,7 +127,7 @@ void benchmarkHome()
 
     // Create benchmark request
     tools::Benchmark::Request req;
-    req.maxTime = 5.0;
+    req.maxTime = 30.0;
     req.maxMem = 100.0;
     req.runCount = 50;
     req.displayProgress = true;
