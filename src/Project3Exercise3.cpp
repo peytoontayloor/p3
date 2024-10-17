@@ -27,8 +27,6 @@ void benchmarkApartment()
     // Load robot and environment
     std::string robot_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/3D/Apartment_robot.dae";
     std::string env_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/3D/Apartment_env.dae";
-    //not sure if needed?
-    //geometric::SimpleSetup ss(space);
     setup.setRobotMesh(robot_fname);
     setup.setEnvironmentMesh(env_fname);
 
@@ -79,31 +77,27 @@ void benchmarkApartment()
 
 void benchmarkHome()
 {
-    //same as apartment but change path to mesh
     // Plan in SE3
     app::SE3RigidBodyPlanning setup;
 
     // Load robot and environment
     std::string robot_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/3D/Home_robot.dae";
     std::string env_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/3D/Home_env.dae";
-    //not sure if needed?
-    //geometric::SimpleSetup ss(space);
     setup.setRobotMesh(robot_fname);
     setup.setEnvironmentMesh(env_fname);
 
     // Define start state
-    //TO DO: start and goal states may be too simple/why it isnt not benchmarking correctly(too fast)
     base::ScopedState<base::SE3StateSpace> start(setup.getSpaceInformation());
-    start->setX(252.95);
-    start->setY(-214.95);
-    start->setZ(46.19);
+    start->setX(-4.96);
+    start->setY(-40.62);
+    start->setZ(70.57);
     start->rotation().setIdentity();
 
     // define goal state
     base::ScopedState<base::SE3StateSpace> goal(start);
-    goal->setX(262.95);
-    goal->setY(75.05);
-    goal->setZ(46.19);
+    goal->setX(200.49);
+    goal->setY(-40.62);
+    goal->setZ(70.57);
     goal->rotation().setIdentity();
   
     // set the start & goal states
@@ -127,8 +121,8 @@ void benchmarkHome()
 
     // Create benchmark request
     tools::Benchmark::Request req;
-    req.maxTime = 30.0;
-    req.maxMem = 100.0;
+    req.maxTime = 60.0;
+    req.maxMem = 1000.0;
     req.runCount = 50;
     req.displayProgress = true;
     b.benchmark(req);
